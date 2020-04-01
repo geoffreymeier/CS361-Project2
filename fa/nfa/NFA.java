@@ -2,6 +2,7 @@ package fa.nfa;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Stack;
 
 import fa.dfa.DFA;
 
@@ -134,6 +135,25 @@ public class NFA implements NFAInterface {
 
 	@Override
 	public Set<NFAState> eClosure(NFAState s) {
-		return null;
+		//return values
+		LinkedHashSet<NFAState> ret = new LinkedHashSet<NFAState>();
+		// DFS stack
+		Stack<NFAState> stack = new Stack<NFAState>();
+
+		ret.add(s);	//add state itself to return set
+		stack.add(s);
+
+		//perform Depth-First Search
+		while (!stack.empty()) {
+			Set<NFAState> states = stack.pop().getTo('e');
+			for (NFAState state : states) {
+				if (!ret.contains(state)) {
+					ret.add(state);
+					stack.add(state);
+				}
+			}
+		}
+
+		return ret;
 	}
 }
