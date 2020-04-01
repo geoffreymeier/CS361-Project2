@@ -2,7 +2,10 @@ package fa.nfa;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Stack;
+import java.util.ArrayList;
+import java.lang.Math;
 
 import fa.dfa.DFA;
 
@@ -130,7 +133,48 @@ public class NFA implements NFAInterface {
 
 	@Override
 	public DFA getDFA() {
-		return null;
+		DFA dfa = new DFA();
+		dfa.addStartState("foo");
+		dfa.addFinalState("foo");
+		// dfa.addState(name);
+		Set<Set<NFAState>> ps = powerSet();
+
+		for (Set<NFAState> set : ps) {
+			System.out.println(set);
+			System.out.println(eClosure(set));
+			System.out.println("----");
+		}
+
+		return dfa;
+	}
+
+	private Set<Set<NFAState>> powerSet() {
+		Set<Set<NFAState>> ret = new HashSet<Set<NFAState>>();
+		
+		for (int i = 0; i < Math.pow(2, states.size()); i++)
+		{
+			Set<NFAState> s = new HashSet<NFAState>();
+			for (int j = 0; j < states.size(); j++) {
+				if (((i >> j) & 1) == 1) 
+				{
+					s.add(new ArrayList<>(states).get(j));
+				}
+			}
+
+			ret.add(s);
+		}
+
+		return ret;
+	}
+
+	private Set<NFAState> eClosure(Set<NFAState> s) {
+		Set<NFAState> ret = new HashSet<NFAState>();
+
+		for (NFAState nfaState : s) {
+			ret.addAll(eClosure(nfaState));
+		}
+
+		return ret;
 	}
 
 	@Override
