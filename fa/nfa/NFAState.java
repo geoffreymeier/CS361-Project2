@@ -1,8 +1,10 @@
-package fa.dfa;
+package fa.nfa;
 
 import java.util.HashMap;
 
 import fa.State;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Jan 19, 2017
@@ -10,19 +12,20 @@ import fa.State;
  * mainly contains the information of its
  * neighboring states.
  * @author elenasherman
- *
+ * @author geoffreymeier
+ * @author parkererway
  */
-public class DFAState extends State{
+public class NFAState extends State{
 	
 
-	private HashMap<Character,DFAState> delta;//delta
+	private HashMap<Character,Set<NFAState>> delta;//delta
 	private boolean isFinal;//remembers its type
 	
 	/**
 	 * Default constructor
 	 * @param name the state name
 	 */
-	public DFAState(String name){
+	public NFAState(String name){
 		initDefault(name);
 		isFinal = false;
 	}
@@ -32,14 +35,14 @@ public class DFAState extends State{
 	 * @param name the state name
 	 * @param isFinal the type of state: true - final, false - nonfinal.
 	 */
-	public DFAState(String name, boolean isFinal){
+	public NFAState(String name, boolean isFinal){
 		initDefault(name);
 		this.isFinal = isFinal;
 	}
 	
 	private void initDefault(String name ){
 		this.name = name;
-		delta = new HashMap<Character, DFAState>();
+		delta = new HashMap<Character, Set<NFAState>>();
 	}
 	
 	/**
@@ -54,10 +57,14 @@ public class DFAState extends State{
 	/**
 	 * Add the transition from <code> this </code> object
 	 * @param onSymb the alphabet symbol
-	 * @param toState to DFA state
+	 * @param toState to NFA state
 	 */
-	public void addTransition(char onSymb, DFAState toState){
-		delta.put(onSymb, toState);
+	public void addTransition(char onSymb, NFAState toState){
+		if (!delta.containsKey(onSymb)) {
+			delta.put(onSymb, new HashSet<NFAState>());
+		}
+
+		delta.get(onSymb).add(toState);
 	}
 	
 	/**
@@ -66,10 +73,10 @@ public class DFAState extends State{
 	 * @param symb - the alphabet symbol
 	 * @return the new state 
 	 */
-	public DFAState getTo(char symb){
-		DFAState ret = delta.get(symb);
+	public Set<NFAState> getTo(char symb){
+		Set<NFAState> ret = delta.get(symb);
 		if(ret == null){
-			 System.err.println("ERROR: DFAState.getTo(char symb) returns null on " + symb + " from " + name);
+			 System.err.println("ERROR: NFAState.getTo(char symb) returns null on " + symb + " from " + name);
 			 System.exit(2);
 			}
 		return delta.get(symb);
