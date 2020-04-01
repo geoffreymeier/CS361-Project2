@@ -4,6 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.lang.Math;
 
@@ -78,7 +80,7 @@ public class NFA implements NFAInterface {
 		}
 		from.addTransition(onSymb, to);
 
-		if (!ordAbc.contains(onSymb)) {
+		if (!ordAbc.contains(onSymb) && onSymb != 'e') {
 			ordAbc.add(onSymb);
 		}
 	}
@@ -126,6 +128,16 @@ public class NFA implements NFAInterface {
 		return from.getTo(onSymb);
 	}
 
+	private Set<NFAState> getToState(Set<NFAState> from, char onSymb) {
+		Set<NFAState> ret = new HashSet<NFAState>();
+		
+		for (NFAState nfaState : from) {
+			ret.addAll(nfaState.getTo(onSymb));
+		}
+
+		return ret;
+	}
+
 	@Override
 	public Set<Character> getABC() {
 		return ordAbc;
@@ -134,37 +146,52 @@ public class NFA implements NFAInterface {
 	@Override
 	public DFA getDFA() {
 		DFA dfa = new DFA();
-		dfa.addStartState("foo");
-		dfa.addFinalState("foo");
+		// dfa.addStartState("foo");
+		// dfa.addFinalState("foo");
 		// dfa.addState(name);
-		Set<Set<NFAState>> ps = powerSet();
+		Set<Set<NFAState>> addedStates = new HashSet<Set<NFAState>>();
 
-		for (Set<NFAState> set : ps) {
-			System.out.println(set);
-			System.out.println(eClosure(set));
-			System.out.println("----");
+		dfa.addStartState(eClosure(start).toString());
+
+		Queue<Set<NFAState>> queue = new LinkedList<Set<NFAState>>();
+		queue.add(eClosure(start));
+
+		String startStateName = eClosure(start).toString();
+		dfa.addStartState(startStateName);
+		if (isFinal(eClosure(start))) dfa.addFinalState(startStateName);
+
+		addedStates.add(eClosure(start));
+
+		while (queue.peek() != null) {
+			Set<NFAState> s = queue.poll();
+
+			for (Character symb : ordAbc) {
+				Set<NFAState> toState = getToState(s, symb);
+				toState = eClosure(toState);
+
+				if (!addedStates.contains(toState)) {
+					if (isFinal(toState))
+						dfa.addFinalState(toState.toString());
+					else
+						dfa.addState(toState.toString());
+
+					addedStates.add(toState);
+					queue.add(toState);
+				}
+
+				dfa.addTransition(s.toString(), symb, toState.toString());				
+			}
 		}
 
 		return dfa;
 	}
 
-	private Set<Set<NFAState>> powerSet() {
-		Set<Set<NFAState>> ret = new HashSet<Set<NFAState>>();
-		
-		for (int i = 0; i < Math.pow(2, states.size()); i++)
-		{
-			Set<NFAState> s = new HashSet<NFAState>();
-			for (int j = 0; j < states.size(); j++) {
-				if (((i >> j) & 1) == 1) 
-				{
-					s.add(new ArrayList<>(states).get(j));
-				}
-			}
-
-			ret.add(s);
+	private boolean isFinal(Set<NFAState> s) {
+		for (NFAState nfaState : s) {
+			if (nfaState.isFinal()) return true;
 		}
 
-		return ret;
+		return false;
 	}
 
 	private Set<NFAState> eClosure(Set<NFAState> s) {
