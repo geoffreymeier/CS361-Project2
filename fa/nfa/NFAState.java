@@ -5,6 +5,7 @@ import java.util.HashMap;
 import fa.State;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Jan 19, 2017
@@ -76,11 +77,28 @@ public class NFAState extends State{
 	public Set<NFAState> getTo(char symb){
 		Set<NFAState> ret = delta.get(symb);
 		if(ret == null){
-			 System.err.println("ERROR: NFAState.getTo(char symb) returns null on " + symb + " from " + name);
-			 System.exit(2);
-			}
+			return new HashSet<NFAState>();
+		}
+		
 		return delta.get(symb);
 	}
 	
+	// private Set<NFAState> recursiveGetTo(char symb, Set<NFAState> alreadySeen) {
+	// 	Set<NFAState> ret = delta.get(symb);
+		
+	// 	Iterator<NFAState> i = ret.iterator();
+	// 	while (i.hasNext()) {
+	// 		NFAState nfaState = i.next();
+
+	// 		if (alreadySeen.contains(nfaState)) {
+	// 			i.remove();
+	// 		}
+
+	// 		alreadySeen.addAll(ret);
+	// 		ret.addAll(nfaState.recursiveGetTo(symb, alreadySeen));
+	// 	}
+
+	// 	return ret;
+	// }
 	
 }

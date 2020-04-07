@@ -3,7 +3,12 @@ package fa.nfa;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.lang.Math;
 
 import fa.dfa.DFA;
 
@@ -76,7 +81,7 @@ public class NFA implements NFAInterface {
 		}
 		from.addTransition(onSymb, to);
 
-		if (!ordAbc.contains(onSymb)) {
+		if (!ordAbc.contains(onSymb) && onSymb != 'e') {
 			ordAbc.add(onSymb);
 		}
 	}
@@ -124,6 +129,16 @@ public class NFA implements NFAInterface {
 		return from.getTo(onSymb);
 	}
 
+	private Set<NFAState> getToState(Set<NFAState> from, char onSymb) {
+		Set<NFAState> ret = new HashSet<NFAState>();
+
+		for (NFAState nfaState : from) {
+			ret.addAll(nfaState.getTo(onSymb));
+		}
+
+		return ret;
+	}
+
 	@Override
 	public Set<Character> getABC() {
 		return ordAbc;
@@ -132,30 +147,90 @@ public class NFA implements NFAInterface {
 	@Override
 	public DFA getDFA() {
 		DFA dfa = new DFA();
+		// dfa.addStartState("foo");
+		// dfa.addFinalState("foo");
+		// dfa.addState(name);
+		Set<Set<NFAState>> addedStates = new HashSet<Set<NFAState>>();
 
+		dfa.addStartState(eClosure(start).toString());
 
+		Queue<Set<NFAState>> queue = new LinkedList<Set<NFAState>>();
+		queue.add(eClosure(start));
+
+		String startStateName = eClosure(start).toString();
+		dfa.addStartState(startStateName);
+		if (isFinal(eClosure(start)))
+			dfa.addFinalState(startStateName);
+
+		addedStates.add(eClosure(start));
+
+		while (queue.peek() != null) {
+			Set<NFAState> s = queue.poll();
+
+			for (Character symb : ordAbc) {
+				Set<NFAState> toState = getToState(s, symb);
+				toState = eClosure(toState);
+
+				if (!addedStates.contains(toState)) {
+					if (isFinal(toState))
+						dfa.addFinalState(toState.toString());
+					else
+						dfa.addState(toState.toString());
+
+					addedStates.add(toState);
+					queue.add(toState);
+				}
+
+				dfa.addTransition(s.toString(), symb, toState.toString());
+			}
+		}
 
 		return dfa;
 	}
 
+	private boolean isFinal(Set<NFAState> s) {
+		for (NFAState nfaState : s) {
+			if (nfaState.isFinal())
+				return true;
+		}
+
+		return false;
+	}
+
+	private Set<NFAState> eClosure(Set<NFAState> s) {
+		Set<NFAState> ret = new HashSet<NFAState>();
+
+		for (NFAState nfaState : s) {
+			ret.addAll(eClosure(nfaState));
+		}
+
+		return ret;
+	}
+
 	@Override
 	public Set<NFAState> eClosure(NFAState s) {
-		//return values
-		LinkedHashSet<NFAState> ret = new LinkedHashSet<NFAState>();
-		// DFS stack
-		Stack<NFAState> stack = new Stack<NFAState>();
 
-		ret.add(s);	//add state itself to return set
-		stack.add(s);
+		Set<NFAState> ret = new LinkedHashSet<NFAState>();
+		ret = eClosureDFS(s, ret);
 
-		//perform Depth-First Search
-		while (!stack.empty()) {
-			Set<NFAState> states = stack.pop().getTo('e');
+		return ret;
+	}
+
+	/**
+	 * A helper method to perform recursive DFS search from a given state.
+	 * 
+	 * @param s   The state to perform DFS search from.
+	 * @param ret The set of values that the results should be added to.
+	 * @return The results of the DFS search added to the values in ret.
+	 */
+	private Set<NFAState> eClosureDFS(NFAState s, Set<NFAState> ret) {
+		if (!ret.contains(s)) {
+			ret.add(s);
+
+			// perform Depth-First Search
+			Set<NFAState> states = getToState(s, 'e');
 			for (NFAState state : states) {
-				if (!ret.contains(state)) {
-					ret.add(state);
-					stack.add(state);
-				}
+				eClosureDFS(state, ret);
 			}
 		}
 
