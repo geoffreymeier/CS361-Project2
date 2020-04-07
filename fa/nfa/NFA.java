@@ -1,14 +1,10 @@
 package fa.nfa;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Stack;
 import java.util.Queue;
 import java.util.LinkedList;
-import java.util.ArrayList;
-import java.lang.Math;
 
 import fa.dfa.DFA;
 
@@ -235,27 +231,5 @@ public class NFA implements NFAInterface {
 		}
 
 		return ret;
-	}
-
-	/**
-	 * Gets the name of the DFAState based on a set of NFA states.
-	 * 
-	 * This method will account for the e-closure of the given states, so it
-	 * is not necessary to compute the e-closure prior to calling this method
-	 * (although it should not affect it if you do).
-	 * 
-	 * @param states
-	 * @return
-	 */
-	private String getDFAStateName(Set<NFAState> states) {
-		Set<NFAState> ret = new LinkedHashSet<NFAState>();
-		for (NFAState s : states) {
-			for (NFAState t : eClosure(s)) {
-				if (!ret.contains(t))
-					ret.add(t);
-			}
-		}
-
-		return ret.toString();
 	}
 }
