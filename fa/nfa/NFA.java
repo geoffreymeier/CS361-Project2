@@ -130,7 +130,7 @@ public class NFA implements NFAInterface {
 
 	private Set<NFAState> getToState(Set<NFAState> from, char onSymb) {
 		Set<NFAState> ret = new HashSet<NFAState>();
-		
+
 		for (NFAState nfaState : from) {
 			ret.addAll(nfaState.getTo(onSymb));
 		}
@@ -158,7 +158,8 @@ public class NFA implements NFAInterface {
 
 		String startStateName = eClosure(start).toString();
 		dfa.addStartState(startStateName);
-		if (isFinal(eClosure(start))) dfa.addFinalState(startStateName);
+		if (isFinal(eClosure(start)))
+			dfa.addFinalState(startStateName);
 
 		addedStates.add(eClosure(start));
 
@@ -179,7 +180,7 @@ public class NFA implements NFAInterface {
 					queue.add(toState);
 				}
 
-				dfa.addTransition(s.toString(), symb, toState.toString());				
+				dfa.addTransition(s.toString(), symb, toState.toString());
 			}
 		}
 
@@ -188,7 +189,8 @@ public class NFA implements NFAInterface {
 
 	private boolean isFinal(Set<NFAState> s) {
 		for (NFAState nfaState : s) {
-			if (nfaState.isFinal()) return true;
+			if (nfaState.isFinal())
+				return true;
 		}
 
 		return false;
@@ -206,22 +208,28 @@ public class NFA implements NFAInterface {
 
 	@Override
 	public Set<NFAState> eClosure(NFAState s) {
-		//return values
-		LinkedHashSet<NFAState> ret = new LinkedHashSet<NFAState>();
-		// DFS stack
-		Stack<NFAState> stack = new Stack<NFAState>();
 
-		ret.add(s);	//add state itself to return set
-		stack.add(s);
+		Set<NFAState> ret = new LinkedHashSet<NFAState>();
+		ret = eClosureDFS(s, ret);
 
-		//perform Depth-First Search
-		while (!stack.empty()) {
-			Set<NFAState> states = stack.pop().getTo('e');
+		return ret;
+	}
+
+	/**
+	 * A helper method to perform recursive DFS search from a given state.
+	 * 
+	 * @param s   The state to perform DFS search from.
+	 * @param ret The set of values that the results should be added to.
+	 * @return The results of the DFS search added to the values in ret.
+	 */
+	private Set<NFAState> eClosureDFS(NFAState s, Set<NFAState> ret) {
+		if (!ret.contains(s)) {
+			ret.add(s);
+
+			// perform Depth-First Search
+			Set<NFAState> states = getToState(s, 'e');
 			for (NFAState state : states) {
-				if (!ret.contains(state)) {
-					ret.add(state);
-					stack.add(state);
-				}
+				eClosureDFS(state, ret);
 			}
 		}
 
