@@ -6,50 +6,32 @@
 
 ## Overview
 
-Concisely explain what the program does. If this exceeds a couple of
-sentences, you're going too far. Generally you should be pulling this
-right from the project specification. I don't want you to just cut and
-paste, but paraphrase what is stated in the project specification.
+This program models *non*-deterministic finite automota based on the project
+spefification. It is a natural extension of the previous project, which
+modelled deterministic finite automota.
 
 ## Compiling and Using
 
-This section should tell the user how to compile your code.  It is
-also appropriate to instruct the user how to use your code. Does your
-program require user input? If so, what does your user need to know
-about it to use it as quickly as possible?
+
+To compile `fa.nfa.NFADriver` from the top directory of these files:
+
+```
+[you@onyx]$ javac fa/nfa/NFADriver.java
+```
+
+To run fa.nfa.NFADriver:
+```
+[you@onyx]$ java fa.nfa.NFADriver ./tests/p2tc0.txt
+```
 
 ## Discussion
 
-Discuss the issues and successes you encountered during programming
-(development). Here are some questions to get you started. You don't
-have to answer all of them in order - they are a guideline to get you
-thinking.
-  * What problems did you have? What went well?
-  * What process did you go through to create the program?
-  * What did you have to research and learn on your own?
-  * What kinds of errors did you get? How did you fix them?
-  * What parts of the project did you find challenging?
-  * Is there anything that finally "clicked" for you in the process 
-  of working on this project?
-  * Is there anything that you would change about the project?
-  * Can you apply what you learned in this project to future projects?
+This project was very straightforward. We copied the provided DFA code, and
+adapted it for the NFA project. Much of it carries over with no changes. 
+Our first solution for DFS was iterative, later changed to recursive after
+it was made clear on Piazza that this is a requirement. 
 
 ## Testing
 
-In this section, tell us how you tested your project.
-
-You are expected to test your projects before submitting them for
-final review. Pretend that your instructor is your manager or 
-customer at work. How would you ensure that you are delivering a 
-working solution to their requirements?
-
-## Sources used
-
-If you used any sources outside of the lecture notes, class lab files,
-or text book you need to list them here. If you looked something up on
-stackoverflow.com and fail to cite it in this section it will be
-considered plagiarism and be dealt with accordingly. So be safe CITE!
-[Here is some help creating links](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links)
-
-----------
-This README template is using Markdown. To preview your README output, you can copy your file contents to a Markdown editor/previewer such as [https://stackedit.io/editor](https://stackedit.io/editor).
+We tested our program against the provided test files, as well as some
+test files that we created.
