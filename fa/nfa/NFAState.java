@@ -16,10 +16,15 @@ import java.util.HashSet;
  * @author parkererway
  */
 public class NFAState extends State{
-	
+	/**
+	 * Map representing state transitions
+	 */
+	private HashMap<Character,Set<NFAState>> delta;
 
-	private HashMap<Character,Set<NFAState>> delta;//delta
-	private boolean isFinal;//remembers its type
+	/**
+	 * Final state flag
+	 */
+	private boolean isFinal;
 	
 	/**
 	 * Default constructor
@@ -31,7 +36,7 @@ public class NFAState extends State{
 	}
 	
 	/**
-	 * Overlaoded constructor that sets the state type
+	 * Overloaded constructor that sets the state type
 	 * @param name the state name
 	 * @param isFinal the type of state: true - final, false - nonfinal.
 	 */
@@ -81,23 +86,4 @@ public class NFAState extends State{
 		
 		return delta.get(symb);
 	}
-	
-	// private Set<NFAState> recursiveGetTo(char symb, Set<NFAState> alreadySeen) {
-	// 	Set<NFAState> ret = delta.get(symb);
-		
-	// 	Iterator<NFAState> i = ret.iterator();
-	// 	while (i.hasNext()) {
-	// 		NFAState nfaState = i.next();
-
-	// 		if (alreadySeen.contains(nfaState)) {
-	// 			i.remove();
-	// 		}
-
-	// 		alreadySeen.addAll(ret);
-	// 		ret.addAll(nfaState.recursiveGetTo(symb, alreadySeen));
-	// 	}
-
-	// 	return ret;
-	// }
-	
 }

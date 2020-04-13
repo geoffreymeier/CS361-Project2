@@ -17,15 +17,33 @@ import fa.dfa.DFA;
  *
  */
 public class NFA implements NFAInterface {
+	/**
+	 * Set of states
+	 */
 	private Set<NFAState> states;
+
+	/**
+	 * Initial state
+	 */
 	private NFAState start;
+
+	/**
+	 * Valid transition characters (excluding e)
+	 */
 	private Set<Character> ordAbc;
 
+	/**
+	 * Default constructor
+	 */
 	public NFA() {
 		states = new LinkedHashSet<NFAState>();
 		ordAbc = new LinkedHashSet<Character>();
 	}
 
+	/**
+	 * Add a new state as the start state
+	 * @param name the state name
+	 */
 	@Override
 	public void addStartState(String name) {
 		NFAState s = checkIfExists(name);
@@ -38,6 +56,10 @@ public class NFA implements NFAInterface {
 		start = s;
 	}
 
+	/**
+	 * Add a new non-start, non-final state
+	 * @param name the state name
+	 */
 	@Override
 	public void addState(String name) {
 		NFAState s = checkIfExists(name);
@@ -49,6 +71,10 @@ public class NFA implements NFAInterface {
 		}
 	}
 
+	/**
+	 * Add a new final state
+	 * @param name the state name
+	 */
 	@Override
 	public void addFinalState(String name) {
 		NFAState s = checkIfExists(name);
@@ -60,10 +86,20 @@ public class NFA implements NFAInterface {
 		}
 	}
 
+	/**
+	 * Private helper method for state added.
+	 * @param name the state name
+	 */
 	private void addState(NFAState s) {
 		states.add(s);
 	}
 
+	/**
+	 * Add transition on a character between two existing states
+	 * @param fromState the origin state
+	 * @param onSymb alphabet character (will be added to ordAbc)
+	 * @param toState the destination state
+	 */
 	@Override
 	public void addTransition(String fromState, char onSymb, String toState) {
 		NFAState from = checkIfExists(fromState);
@@ -99,11 +135,19 @@ public class NFA implements NFAInterface {
 		return ret;
 	}
 
+	/**
+	 * Get all states currently in the NFA
+	 * @return Set of existing states
+	 */
 	@Override
 	public Set<NFAState> getStates() {
 		return states;
 	}
 
+	/**
+	 * Get all final states in the NFA
+	 * @return Set of all final states in the NFA
+	 */
 	@Override
 	public Set<NFAState> getFinalStates() {
 		Set<NFAState> ret = new LinkedHashSet<NFAState>();
@@ -115,11 +159,21 @@ public class NFA implements NFAInterface {
 		return ret;
 	}
 
+	/**
+	 * Get NFA start state
+	 * @return NFAState marked as the initial state
+	 */
 	@Override
 	public NFAState getStartState() {
 		return start;
 	}
 
+	/**
+	 * Get states transitioned to from `from` on `onSymb`
+	 * @param from current NFA state
+	 * @param onSymb the input symbol
+	 * @return Set of destination states for this symbol
+	 */
 	@Override
 	public Set<NFAState> getToState(NFAState from, char onSymb) {
 		return from.getTo(onSymb);
@@ -135,11 +189,19 @@ public class NFA implements NFAInterface {
 		return ret;
 	}
 
+	/**
+	 * Get alphabet
+	 * @return Set of all valid transition characters, except e.
+	 */
 	@Override
 	public Set<Character> getABC() {
 		return ordAbc;
 	}
 
+	/**
+	 * Convert the NFA into a DFA object
+	 * @return object representing the DFA after conversion
+	 */
 	@Override
 	public DFA getDFA() {
 		DFA dfa = new DFA();
@@ -184,6 +246,12 @@ public class NFA implements NFAInterface {
 		return dfa;
 	}
 
+	/**
+	 * A helper method to determine if any of the given states are final.
+	 * 
+	 * @param s   The states to check
+	 * @return True if any of the given states are final.
+	 */
 	private boolean isFinal(Set<NFAState> s) {
 		for (NFAState nfaState : s) {
 			if (nfaState.isFinal())
@@ -193,6 +261,12 @@ public class NFA implements NFAInterface {
 		return false;
 	}
 
+	/**
+	 * A helper method to perform recursive DFS search on multiple states.
+	 * 
+	 * @param s   The states to perform DFS search from.
+	 * @return The results of the DFS search on all given states.
+	 */
 	private Set<NFAState> eClosure(Set<NFAState> s) {
 		Set<NFAState> ret = new HashSet<NFAState>();
 
@@ -203,6 +277,11 @@ public class NFA implements NFAInterface {
 		return ret;
 	}
 
+	/**
+	 * Get the epsilon closure from a given state s.
+	 * @return Set of all states accessible by following only 'e'
+	 * 		   transitions from `s`.
+	 */
 	@Override
 	public Set<NFAState> eClosure(NFAState s) {
 
